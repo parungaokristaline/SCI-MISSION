@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SCI-MISSION: Science Investigation Missions</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#16213a;--mut:#5b6785;--line:#dde2ee;--pri:#3b5bdb;--acc:#f08c00;--ok:#2b9348;--soft:#eaeefc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#171f36;--ink:#eef1fb;--mut:#a0abc9;--line:#2b365a;--pri:#7c93ff;--acc:#ffb340;--ok:#5fd37f;--soft:#202a4a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#171f36;--ink:#eef1fb;--mut:#a0abc9;--line:#2b365a;--pri:#7c93ff;--acc:#ffb340;--ok:#5fd37f;--soft:#202a4a;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);display:flex;gap:4px;align-items:center;padding:8px 14px;overflow-x:auto}
+nav b{margin-right:auto;white-space:nowrap}nav button{white-space:nowrap}
+button,select,textarea,input{font:inherit;color:inherit}
+.tab{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;color:var(--mut)}
+.tab.on{background:var(--soft);color:var(--pri);font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+.hero{background:linear-gradient(135deg,#3b5bdb,#7048e8);color:#fff;border-radius:18px;padding:34px 24px}
+.hero h1{margin:0 0 6px;font-size:clamp(28px,6vw,44px)}.hero p{margin:6px 0;max-width:640px}
+.btn{background:var(--pri);color:#fff;border:0;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn.alt{background:var(--soft);color:var(--pri)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.hero .btn{background:#fff;color:#3b5bdb;margin:12px 8px 0 0}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+h2{margin:30px 0 10px}h3{margin:0 0 6px}.mut{color:var(--mut);font-size:14px}
+.tag{display:inline-block;background:var(--soft);color:var(--pri);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:600;margin:2px 0}
+.mc{cursor:pointer;transition:transform .15s}.mc:hover{transform:translateY(-3px)}.mc.done{border-color:var(--ok)}
+.stages{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.st{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:4px 10px;font-size:13px;cursor:pointer}
+.st.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+textarea,input[type=text],input[type=number],select{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+textarea{min-height:76px}label{display:block;font-weight:600;margin:10px 0 4px;font-size:14px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid var(--line);padding:6px;text-align:left;font-size:14px}th{background:var(--soft)}
+td input{border:0;background:transparent;padding:4px;min-width:70px}
+.wrap{overflow-x:auto}.row{display:flex;justify-content:space-between;gap:8px;margin-top:16px;flex-wrap:wrap}
+.bar{height:10px;background:var(--soft);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);transition:width .4s}
+.chain{display:flex;flex-wrap:wrap;gap:6px}.chain button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;cursor:pointer}
+.chain button.on{background:var(--acc);color:#111;border-color:var(--acc)}
+.badge{font-size:38px;text-align:center;filter:grayscale(1);opacity:.35;transition:.4s}.badge.got{filter:none;opacity:1}
+.q label{font-weight:400;display:flex;gap:8px;margin:4px 0;align-items:center}
+.good{color:var(--ok);font-weight:600}.bad{color:#e03131;font-weight:600}
+.note{border-left:4px solid var(--acc);background:var(--soft);padding:10px 12px;border-radius:6px;margin:10px 0;font-size:14px}
+@media print{nav,.btn,.row{display:none}}
+</style></head><body>
+<nav><b>🔬 SCI-MISSION</b>
+<button class="tab on" data-v="home">Home</button><button class="tab" data-v="missions">Missions</button><button class="tab" data-v="passport">Passport</button><button class="tab" data-v="teacher">Teacher</button><button class="tab" data-v="rubric">Rubric</button><button class="tab" id="th" title="Toggle theme">◐</button></nav>
+<main id="app"></main>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+let S={m:{}};try{S=JSON.parse(localStorage.getItem("scim")||"null")||S}catch(e){}
+const save=()=>{try{localStorage.setItem("scim",JSON.stringify(S))}catch(e){}};
+const STAGES=["Discover","Predict","Plan","Investigate","Record","Decode","Explain","Decide","Reflect","Badge"];
+const M=[
+{n:1,t:"Mystery Melt",c:"Scientific Investigation",b:"🔎",bn:"Investigation Planner",story:"A science team found that some ice melts faster than other ice, even when the amount of ice is the same. Your team must find out why.",q:"Which condition can affect how quickly ice melts?",mat:["ice cubes","3 small plates/cups","salt","water","timer/phone","spoon","paper & pencil"],factors:"Factors to test: salt · amount of water · location · container type",
+steps:["Choose ONE factor to test.","Prepare 3 setups that differ only in that factor.","Start the timer when all ice is placed.","Record the time or observation for each trial.","Repeat so you have at least 3 trials."],
+tbl:{h:["Trial","Condition","Minutes to melt"],r:[["1","",""],["2","",""],["3","",""]],lab:1,num:[2]},
+quiz:{q:"In a fair test, how many conditions do you change at a time?",o:["One","Two","All of them"],a:0},
+frame:"Our investigation shows that ____ affects the melting of ice because ____."},
+{n:2,t:"The Disappearing Water Challenge",c:"Scientific Investigation",b:"🔎",bn:"Controlled Investigation",story:"A community group notices that water placed in different places disappears at different rates. They want to know what condition affects the rate of water loss.",q:"What condition affects the rate at which water evaporates?",mat:["3 identical cups","water","measuring cup","marker","sunny spot","shaded spot","indoor spot"],factors:"Identify: independent, dependent and controlled variables, evidence, conclusion",
+steps:["Label the cups Sunny, Shaded, Indoor.","Pour the SAME amount of water in each.","Place each cup in its location.","Measure the water remaining at regular intervals.","Identify the independent, dependent and controlled variables."],
+tbl:{h:["Location","Start (mL)","Remaining (mL)"],r:[["Sunny","",""],["Shaded","",""],["Indoor","",""]],lab:0,num:[1,2]},
+quiz:{q:"What is the independent variable here?",o:["Amount of water left","Location of the cup","Size of the cup"],a:1},
+frame:"The water evaporated faster/slower in ____ because ____."},
+{n:3,t:"The Evidence Detective",c:"Data Interpretation",b:"📊",bn:"Data Detective",story:"Three student teams studied the same phenomenon, but their results are only numbers. Decode what the data are telling you.",q:"Which group shows the strongest pattern of increase? What evidence supports your answer?",mat:["pencil","the graph below"],factors:"Organize → Detect pattern → Represent → Explain",
+steps:["Find the highest and lowest values.","Work out how much each group increased (last − first).","Study the graph.","Write a claim backed by numbers."],
+tbl:{h:["Trial","Group A","Group B","Group C"],r:[[1,50,30,40],[2,70,50,45],[3,90,65,50],[4,110,80,55],[5,130,95,60]],lab:0,num:[1,2,3],given:1},
+quiz:{q:"Which group shows the greatest increase from Trial 1 to Trial 5?",o:["Group A (+80)","Group B (+65)","Group C (+20)"],a:0},
+frame:"Claim: ____ Evidence: ____ Reasoning: ____"},
+{n:4,t:"The Hidden Pattern Challenge",c:"Data Interpretation",b:"📈",bn:"Pattern Finder",story:"You have the results of an investigation, but no conclusion. Uncover the hidden pattern and decide what happened.",q:"What happens to the time when temperature increases? If it gets even warmer, what do you predict?",mat:["pencil","the data table below"],factors:"Trend → Graph → Compare → Predict",
+steps:["Identify the trend.","Compare Low with Very Warm.","Predict the time for a condition warmer than Very Warm, using the data.","Explain your prediction with evidence."],
+tbl:{h:["Temperature condition","Time to change (min)"],r:[["Low",12],["Moderate",9],["Warm",6],["Very Warm",3]],lab:0,num:[1],given:1},
+quiz:{q:"As temperature increases, the time to change…",o:["Increases","Decreases","Stays the same"],a:1},
+frame:"As temperature increases, the time ____ because the data show ____."},
+{n:5,t:"Reaction Rescue",c:"Chemical Reactions",b:"🧪",bn:"Reaction Rescue",story:"A community science team must decide whether a substance has undergone a chemical reaction. You have two common household materials.",q:"What evidence shows that a chemical reaction occurred?",mat:["vinegar","baking soda","plastic cup/bottle","spoon","balloon","measuring cup"],factors:"Signs: gas · temperature change · color · new substance",
+steps:["Put a measured amount of vinegar in the container.","Put baking soda in the balloon.","Carefully attach the balloon to the container.","Let the baking soda mix with the vinegar.","Observe and record ALL evidence."],safe:1,
+tbl:{h:["Observation","Evidence of change?","Explanation"],r:[["Bubbles appear","",""],["Balloon expands","",""],["Temperature changes","",""],["New gas appears to form","",""]],lab:0,num:[]},
+quiz:{q:"Which observation is a sign of a chemical reaction?",o:["Ice cube melts","New gas bubbles form","Paper is torn"],a:1},
+frame:"A chemical reaction occurred because ____ and ____. (Name at least two signs.)"},
+{n:6,t:"The Mystery Reaction Lab",c:"Chemical Reactions",b:"🧪",bn:"Chemical Reaction Expert",story:"A mystery mixture has been prepared. Decide whether the change is only a physical change or evidence of a chemical reaction. No answer is given. Collect evidence!",q:"Based on the evidence, how can you determine whether a chemical reaction occurred?",mat:["vinegar","baking soda","water","spoon","transparent cup","thermometer (if available)","observation sheet"],factors:"Signs: gas · temperature · color · new substance",
+steps:["Test water + baking soda first (your comparison).","Then test vinegar + baking soda.","Record gas, temperature, color and any new substance.","Compare the two tests."],safe:1,
+tbl:{h:["Evidence","Observation","What does it suggest?"],r:[["Gas formation","",""],["Temperature change","",""],["Color change","",""],["New substance / sign of change","",""]],lab:0,num:[]},
+quiz:{q:"Which is the STRONGEST evidence of a chemical reaction?",o:["A solid dissolves clearly in water","A new gas forms that was not there before","A cup changes position"],a:1},
+frame:"I conclude that ____ because the evidence shows ____, ____, and ____."}];
+const mm=n=>{S.m[n]=S.m[n]||{s:0,f:{},d:{},qa:null,got:false,x:{}};return S.m[n]};
+const done=()=>M.filter(m=>mm(m.n).got).length;
+let view="home",cur=1;
+const tabs=$$(".tab[data-v]");
+tabs.forEach(b=>b.onclick=()=>go(b.dataset.v));
+$("#th").onclick=()=>{const r=document.documentElement;const d=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=d?"light":"dark"};
+function go(v,n){view=v;if(n)cur=n;tabs.forEach(b=>b.classList.toggle("on",b.dataset.v===v));R[v]();scrollTo(0,0)}
+const A=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const R={
+home(){A.innerHTML=`<div class="hero"><span class="tag" style="background:#ffffff33;color:#fff">Junior High School Science</span><h1>SCI-MISSION</h1><p><b>Science Investigation Missions</b><br>A low-cost, mission-based experimental learning kit for Scientific Investigation, Data Interpretation and Chemical Reactions.</p><p><i>Investigate. Decode. Explain. Act.</i></p><button class="btn" id="go1">Start Mission 1 →</button><button class="btn" id="goM">See all missions</button></div>
+<h2>How a mission works</h2><p class="mut">Learners don’t follow a recipe. They get a problem and must prove their answer with evidence. Click each link of the <b>Evidence Chain</b>:</p>
+<div class="chain" id="ch"></div><div class="note" id="chx"></div>
+<h2>The three competencies</h2><div class="grid">${["Scientific Investigation|Identify a problem, predict, identify variables, plan and safely conduct a simple investigation.|Missions 1–2","Data Interpretation|Organize data, find patterns and trends, read and build graphs, support conclusions with evidence.|Missions 3–4","Chemical Reactions|Identify observable evidence of chemical change and explain it with evidence.|Missions 5–6"].map(x=>{const p=x.split("|");return`<div class="card"><span class="tag">${p[2]}</span><h3>${p[0]}</h3><p class="mut">${p[1]}</p></div>`}).join("")}</div>
+<h2>Built on Keller’s ARCS Model</h2><div class="grid">${[["A","Attention","A mystery or unusual observation sparks curiosity."],["R","Relevance","Everyday situations and household materials."],["C","Confidence","Guided questions, planning templates, gradual challenges."],["S","Satisfaction","Evidence, defended conclusions, feedback and badges."]].map(a=>`<div class="card"><h3 style="color:var(--acc)">${a[0]} · ${a[1]}</h3><p class="mut">${a[2]}</p></div>`).join("")}</div>
+<h2>Inside the SCI-MISSION Box</h2><div class="grid"><div class="card"><h3>👩‍🏫 Teacher</h3><p class="mut">Mission Guide · Competency Matrix · ARCS Guide · Safety Guide · Facilitation Guide · Rubrics</p></div><div class="card"><h3>🎒 Learner</h3><p class="mut">Mission Passport · 6 Mission Cards · 6 Evidence Cards · Data Sheets · Reflection Sheets · Badge Cards</p></div><div class="card"><h3>🧪 Low-cost materials</h3><p class="mut">Vinegar · baking soda · ice · salt · cups · balloons · measuring tools · recycled items</p></div></div>
+<h2>Your progress</h2><div class="card"><div class="bar"><i style="width:${done()/6*100}%"></i></div><p class="mut">${done()} of 6 missions complete</p></div>`;
+const ch=[["Question","Does salt affect ice melting?"],["Prediction","Salt will make ice melt faster."],["Investigation","Compare salted and unsalted ice."],["Evidence","The salted ice melted faster."],["Data","8 minutes vs. 14 minutes."],["Claim","Salt affected the melting rate."],["Reasoning","The salted ice showed a faster change under the tested conditions."]];
+const box=$("#ch");ch.forEach((c,i)=>{const b=document.createElement("button");b.textContent=(i+1)+". "+c[0];b.onclick=()=>{$$("button",box).forEach(x=>x.classList.remove("on"));b.classList.add("on");$("#chx").innerHTML="<b>"+c[0]+":</b> "+c[1]};box.append(b)});box.firstChild.click();
+$("#go1").onclick=()=>{go("missions",1);play()};$("#goM").onclick=()=>go("missions")},
+missions(){A.innerHTML=`<h2 style="margin-top:0">Choose your mission</h2><div class="grid">${M.map(m=>{const g=mm(m.n).got;return`<div class="card mc ${g?"done":""}" data-n="${m.n}"><span class="tag">Mission ${m.n} · ${m.c}</span><h3 style="margin-top:8px">${m.b} ${m.t}</h3><p class="mut">${m.q}</p><b>${g?"✅ Badge earned":mm(m.n).s?"Continue →":"Start →"}</b></div>`}).join("")}</div><div id="play"></div>`;
+$$(".mc").forEach(c=>c.onclick=()=>{cur=+c.dataset.n;play();$("#play").scrollIntoView({behavior:"smooth"})})},
+passport(){A.innerHTML=`<h2 style="margin-top:0">My Science Mission Passport</h2><div class="card"><label>Name</label><input type="text" id="pn" value="${esc(S.name)}"><label>Grade / Section</label><input type="text" id="pg" value="${esc(S.grade)}"><label>Science Team</label><input type="text" id="pt" value="${esc(S.team)}"></div>
+<h2>Mission tracker</h2><div class="card wrap"><table><tr><th>#</th><th>Mission</th><th>Competency</th><th>Status</th><th>Badge</th></tr>${M.map(m=>`<tr><td>${m.n}</td><td>${m.t}</td><td>${m.c}</td><td>${mm(m.n).got?"☑ Complete":"☐ Not yet"}</td><td>${m.b}</td></tr>`).join("")}</table></div>
+<h2>Badges</h2><div class="grid">${M.map(m=>`<div class="card"><div class="badge ${mm(m.n).got?"got":""}">${m.b}</div><p style="text-align:center;margin:4px 0"><b>${m.bn}</b></p></div>`).join("")}</div>
+<h2>Bonus badges</h2><div class="grid">${[["🧠","Scientific Thinker","All 6 missions earned",done()===6],["⭐","Science Mission Complete","Complete the full portfolio",done()===6]].map(b=>`<div class="card"><div class="badge ${b[3]?"got":""}">${b[0]}</div><p style="text-align:center;margin:4px 0"><b>${b[1]}</b><br><span class="mut">${b[2]}</span></p></div>`).join("")}</div>
+<div class="row"><button class="btn" onclick="print()">🖨 Print Passport</button><button class="btn alt" id="rs">Reset all progress</button></div>`;
+[["pn","name"],["pg","grade"],["pt","team"]].forEach(([i,k])=>$("#"+i).oninput=e=>{S[k]=e.target.value;save()});
+$("#rs").onclick=()=>{if(confirm("Erase all mission progress?")){S={m:{}};save();go("passport")}}},
+teacher(){A.innerHTML=`<h2 style="margin-top:0">Teacher’s Implementation Guide</h2><div class="grid">
+<div class="card"><h3>1 · Before the mission</h3><ol><li>Introduce the mission story</li><li>Present the problem</li><li>Organize learners into teams</li><li>Distribute the Mission Card</li><li>Explain safety procedures</li><li>Provide the low-cost materials</li></ol></div>
+<div class="card"><h3>2 · During the mission</h3><p class="mut">Don’t give the answer. Ask:</p><ul><li>What do you think will happen?</li><li>What evidence will you collect?</li><li>What are you changing? Keeping the same?</li><li>What does your data show?</li><li>Does the evidence support your prediction?</li></ul></div>
+<div class="card"><h3>3 · After the mission</h3><ol><li>Evidence sharing</li><li>Group explanation</li><li>Compare results</li><li>Correct misconceptions</li><li>Reflection</li><li>Mission assessment</li><li>Award badges</li></ol></div></div>
+<h2>Safety guidelines</h2><div class="note">Use eye protection for Missions 5–6. Do not taste or smell materials directly. Keep the balloon pointed away from faces. Wipe spills immediately. Wash hands after each mission. Adult supervision is required throughout.</div>
+<h2>Expected evidence guide</h2><div class="card wrap"><table><tr><th>Mission</th><th>Expected evidence</th></tr>
+<tr><td>1</td><td>Fair comparison with ≥3 trials; only one factor changed; salted ice typically melts faster.</td></tr>
+<tr><td>2</td><td>Sunny location usually shows the greatest water loss; IV: location, DV: water remaining, controls: cup, amount, time.</td></tr>
+<tr><td>3</td><td>Group A shows the greatest increase (+80); claim supported with numbers and graph.</td></tr>
+<tr><td>4</td><td>Time decreases as temperature rises (12→3 min); prediction for a warmer condition is lower, justified by the trend.</td></tr>
+<tr><td>5</td><td>Bubbles, balloon inflation (new gas), possible temperature change: at least two signs of chemical change.</td></tr>
+<tr><td>6</td><td>Gas formation compared against the water-only test; conclusion cites at least three pieces of evidence.</td></tr></table></div>
+<h2>Validation</h2><p class="mut">The package is designed for expert evaluation using the DepEd LRMDS Evaluation Tool: Content Quality, Instructional Quality, Technical Quality and Usability.</p>`},
+rubric(){const C=[["Investigation",["Needs continuous assistance","Needs several reminders","Conducts with minor guidance","Plans and conducts independently"]],["Evidence Collection",["Evidence is incomplete","Records limited evidence","Records most evidence","Records complete and accurate evidence"]],["Data Interpretation",["Cannot yet interpret data","Some errors in interpretation","Correctly interprets most data","Correctly identifies and explains patterns"]],["Scientific Explanation",["Explanation is unclear","Explanation is incomplete","Reasonable explanation","Clear claim, evidence and reasoning"]],["Problem Solving",["Difficulty making decisions","Needs guidance","Generally appropriate decisions","Appropriate scientific decisions"]],["Reflection",["Little or no reflection","Simple reflection","Clear reflection","Explains learning and improvements"]]];
+A.innerHTML=`<h2 style="margin-top:0">Mission Performance Rubric</h2><p class="mut">Select a level for each criterion. Maximum: 24 points.</p><div class="card">${C.map(c=>`<label>${c[0]}</label><select class="rb"><option value="0">— choose —</option>${c[1].map((o,j)=>`<option value="${j+1}">${j+1} – ${o}</option>`).join("")}</select>`).join("")}<h2 id="rs2">Score: 0 / 24</h2></div>`;
+$$(".rb").forEach(s=>s.onchange=()=>{const t=$$(".rb").reduce((a,x)=>a+ +x.value,0);const l=t>=21?"Excellent":t>=16?"Good":t>=11?"Developing":t>0?"Beginning":"";$("#rs2").textContent=`Score: ${t} / 24 ${l?"· "+l:""}`})}
+};
+function play(){const m=M.find(x=>x.n===cur),st=mm(cur),P=$("#play");if(!P)return;
+const s=st.s,fv=k=>esc(st.f[k]);
+const ta=(k,l)=>`<label>${l}</label><textarea data-k="${k}">${fv(k)}</textarea>`;
+const tb=m.tbl,D=st.d;
+const cell=(r,c,v)=>{const key=r+"_"+c,val=D[key]??v,ro=tb.given||(c===0&&tb.r[r][0]!=="");return`<td><input ${ro?"readonly":""} data-d="${key}" value="${esc(val)}" ${tb.num.includes(c)?'type="number" inputmode="decimal"':'type="text"'}></td>`};
+const tblh=`<div class="wrap"><table><tr>${tb.h.map(h=>`<th>${h}</th>`).join("")}</tr>${tb.r.map((r,i)=>`<tr>${r.map((v,j)=>cell(i,j,v)).join("")}</tr>`).join("")}</table></div>`;
+let body="";
+if(s===0)body=`<div class="note"><b>Mission Brief:</b> ${m.story}</div><h3>Mission question</h3><p><b>${m.q}</b></p><p class="mut">${m.factors}</p><h3>Material check</h3><p>${m.mat.map(x=>`<span class="tag">${x}</span> `).join("")}</p>`;
+if(s===1)body=`<p>Make a <b>testable prediction</b>. Try “If ___, then ___ because ___.”</p>${ta("pred","My prediction")}`;
+if(s===2)body=`<p>Plan before you act.</p>${ta("p1","What will I investigate?")}${ta("p2","What will I change? (independent variable)")}${ta("p3","What will I observe/measure? (dependent variable)")}${ta("p4","What will I keep the same? (controlled variables)")}${ta("p5","Safety precautions")}`;
+if(s===3)body=(m.safe?`<div class="note">⚠️ Safety first: eye protection on, adult nearby, balloon pointed away from faces.</div>`:"")+`<p>Mission steps. Tick each when done:</p>${m.steps.map((x,i)=>`<label style="font-weight:400;display:flex;gap:8px"><input type="checkbox" data-x="${i}" ${st.x[i]?"checked":""}> ${x}</label>`).join("")}`;
+if(s===4)body=`<p>${tb.given?"Here is the data set from the investigation. Study it:":"Fill in your Evidence Log with what you measure or see."}</p>${tblh}${ta("obs","Other observations (drawings, photos, notes)")}`;
+if(s===5){const q=m.quiz;body=`<h3>Data Decode</h3>${tb.num.length?`<div id="gr"></div>`:`<p class="mut">Review your Evidence Log. Which observations are real signs of a new substance forming?</p>`}<div class="q card" style="margin-top:12px"><b>${q.q}</b>${q.o.map((o,i)=>`<label><input type="radio" name="qz" value="${i}" ${st.qa===i?"checked":""}> ${o}</label>`).join("")}<div>${st.qa!==null?(st.qa===q.a?'<span class="good">✔ Correct! Now explain it.</span>':'<span class="bad">✘ Look at your evidence again.</span>'):""}</div></div>`}
+if(s===6)body=`<p>Build your scientific explanation.</p>${ta("claim","Claim: what is your answer?")}${ta("ev","Evidence: which data or observations support it?")}${ta("rea","Reasoning: why does the evidence support the claim?")}`;
+if(s===7)body=`<div class="note"><b>Mission question:</b> ${m.q}</div><p class="mut">Sentence frame: ${m.frame}</p>${ta("dec","Our Mission Decision")}`;
+if(s===8)body=ta("ref","What did I learn?")+ta("chg","What would I change next time?");
+if(s===9){const need=chk(m);body=`<h3>Earn the badge</h3><p class="mut">The whole Evidence Chain must be complete:</p>${need.map(x=>`<div>${x[1]?"✅":"⬜"} ${x[0]}</div>`).join("")}<div style="text-align:center;margin:18px"><div class="badge ${st.got?"got":""}" style="font-size:70px">${m.b}</div><b>${m.bn}</b></div><div style="text-align:center"><button class="btn" id="earn" ${need.every(x=>x[1])&&!st.got?"":"disabled"}>${st.got?"Badge earned! 🎉":"Earn badge"}</button></div>${st.got?`<div class="card" style="margin-top:14px"><h3>Evidence Card · Mission ${m.n}</h3><p><b>Question:</b> ${m.q}</p><p><b>Prediction:</b> ${fv("pred")}</p><p><b>Claim:</b> ${fv("claim")}</p><p><b>Evidence:</b> ${fv("ev")}</p><p><b>Reasoning:</b> ${fv("rea")}</p><p><b>Decision:</b> ${fv("dec")}</p><p><b>Would change:</b> ${fv("chg")}</p></div>`:""}`}
+P.innerHTML=`<h2>Mission ${m.n}: ${m.t}</h2><span class="tag">${m.c}</span><div class="stages">${STAGES.map((x,i)=>`<span class="st ${i===s?"on":""}" data-i="${i}">${i+1}. ${x}</span>`).join("")}</div><div class="card">${body}</div><div class="row"><button class="btn alt" id="pv" ${s?"":"disabled"}>← Back</button><button class="btn" id="nx" ${s<9?"":"disabled"}>Next →</button></div>`;
+$$(".st",P).forEach(e=>e.onclick=()=>{st.s=+e.dataset.i;save();play()});
+$("#pv").onclick=()=>{st.s--;save();play()};$("#nx").onclick=()=>{st.s++;save();play();P.scrollIntoView({behavior:"smooth"})};
+$$("[data-k]",P).forEach(e=>e.oninput=()=>{st.f[e.dataset.k]=e.value;save()});
+$$("[data-d]",P).forEach(e=>e.oninput=()=>{st.d[e.dataset.d]=e.value;save()});
+$$("[data-x]",P).forEach(e=>e.onchange=()=>{st.x[e.dataset.x]=e.checked;save()});
+$$("[name=qz]",P).forEach(e=>e.onchange=()=>{st.qa=+e.value;save();play()});
+if(s===5&&tb.num.length)graph(m);
+const eb=$("#earn");if(eb)eb.onclick=()=>{st.got=true;save();play();burst()}}
+function chk(m){const st=mm(m.n),f=st.f,n=Object.values(st.d).filter(v=>v!=="").length;
+return[["Prediction written",!!f.pred],["Investigation plan completed",!!(f.p1&&f.p2&&f.p3&&f.p4)],["Data / evidence recorded",!!m.tbl.given||n>=3],["Pattern question answered correctly",st.qa===m.quiz.a],["Claim, evidence and reasoning written",!!(f.claim&&f.ev&&f.rea)],["Mission decision made",!!f.dec],["Reflection written",!!(f.ref&&f.chg)]]}
+function graph(m){const tb=m.tbl,st=mm(m.n),g=$("#gr");
+const val=(r,c)=>{const v=st.d[r+"_"+c]??tb.r[r][c];return v===""||v==null?NaN:+v};
+const labs=tb.r.map(r=>r[tb.lab]);
+const all=tb.r.flatMap((_,i)=>tb.num.map(c=>val(i,c))).filter(x=>!isNaN(x));
+if(!all.length){g.innerHTML='<p class="mut">No numbers recorded yet. Go back to “Record” and enter your data to see the graph.</p>';return}
+const W=640,H=280,L=44,B=40,T=14,mx=Math.max(...all)*1.1||1,cols=["#3b5bdb","#f08c00","#2b9348"];
+const x=i=>L+(tb.r.length>1?i*(W-L-20)/(tb.r.length-1):(W-L)/2),y=v=>H-B-(v/mx)*(H-B-T);
+let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:640px" role="img" aria-label="Line graph of the data">`;
+for(let i=0;i<=4;i++){const v=mx*i/4;s+=`<line x1="${L}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--mut)">${Math.round(v)}</text>`}
+tb.num.forEach((c,k)=>{const pts=tb.r.map((_,i)=>[x(i),y(val(i,c))]).filter(p=>!isNaN(p[1]));s+=`<polyline fill="none" stroke="${cols[k%3]}" stroke-width="3" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${cols[k%3]}"/>`).join("")});
+labs.forEach((l,i)=>s+=`<text x="${x(i)}" y="${H-B+16}" font-size="11" text-anchor="middle" fill="var(--mut)">${esc(String(l).slice(0,12))}</text>`);
+s+="</svg><div>"+tb.num.map((c,k)=>`<span style="color:${cols[k%3]};margin-right:12px">● ${tb.h[c]}</span>`).join("")+"</div>";g.innerHTML=s}
+function burst(){const e=document.createElement("div");e.style.cssText="position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;font-size:90px;z-index:20;animation:f 1.6s forwards";e.textContent="🏅🎉";const k=document.createElement("style");k.textContent="@keyframes f{0%{transform:scale(.3);opacity:0}30%{transform:scale(1.2);opacity:1}100%{transform:scale(1.6);opacity:0}}";document.head.append(k);document.body.append(e);setTimeout(()=>{e.remove();k.remove()},1700)}
+go("home");
+</script></body></html>
